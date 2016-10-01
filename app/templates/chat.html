@@ -77,19 +77,31 @@
                 socket.on('showmap',function(data){
                     var initMap= function() {
                         var map = new google.maps.Map(document.getElementById('map'), {
-                            zoom: 16,
+                            zoom: 14,
                             center: data.center,
                         });
-                        console.log(data.places.length);
+
                         for (p of data.places) {
-                           var marker = new google.maps.Marker({
-                               map: map,
-                               title: p.name,
-                               place: {
-                                   placeId: p.place_id,
-                                   location: p.geometry.location,
-                               }
-                           });
+                            var marker = new google.maps.Marker({
+                                map: map,
+                                title: p.name,
+                                position: p.geometry.location,
+                                place: {
+                                    placeId: p.place_id,
+                                    location: p.geometry.location,
+                                }
+                            });
+                            var infowindow = new google.maps.InfoWindow({
+                                content: p.name
+                            });
+                            marker.addListener('click', function(infowindow, place_id) {
+                              return function() {
+                                  map.setZoom(16);
+                                  map.panTo(this.getPosition());
+                                  infowindow.open(map, this);
+                                  socket.emit('marker_select', {'place_id':place_id});
+                              }
+                            }(infowindow, p.place_id));
                         }
                     }
                      $('#image').hide();

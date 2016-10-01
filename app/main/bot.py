@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 #import infermedica_api
 import mock_infermedica as infermedica_api
 
@@ -51,9 +53,46 @@ class ConvoBot(object):
     def ask_age(self):
         return "What is your age?"
 
-    def speak(self, msg):
+    def ask_clinic(self, place_id):
+        place_info = self.gmaps.place(place_id)['result']
+        key_label = [('name', 'Name'),
+                     ('formatted_address', 'Address'),
+                     ('formatted_phone_number', 'Phone'),
+                     ('website', 'Website')]
+        s = []
+        for k, l in key_label:
+            try:
+                value = place_info[k]
+            except KeyError:
+                continue
+            s.append(u'{label}: {value}'.format(label=l, value=value))   
+        s = u'\n'.join(s)
+        
+        question = u"Would you like to make an appointment at this clinic?\n{}".format(s)
+        return question
+
+
+    def speak(self, msg, state=None):
         '''Respond to message
         '''
+
+        if state is not None:
+            self._state = state
+            return self.speak(msg)
+
+        if self._state == 'SELECTED_CLINIC':
+            self._state = 'ASKING_CLINIC'
+            self._clinic = msg
+            return self.ask_clinic(place_id=msg)
+
+        if self._state == 'ASKING_CLINIC':
+            if msg.lower() in ['y', 'yes', 'yep', 'true']:
+                self._state = 'FINISHED'    
+                return "Appointment made!"
+            else:
+                self._clinic = None
+                self._state = None
+                return ''
 
         if self.age is None:
             if self._state == "ASKING_AGE":
@@ -156,7 +195,7 @@ class ConvoBot(object):
                       'lng': self.user_location[1]}
             room = session.get('room')
             emit('showmap', {'center': center, 'places': places}, room=room)
-            return "These clinics may help:\n" + clinic_names
+            return "I can refer you to a {} clinic.\n(Clinics shown on the map.)".format(specialty) 
 
         if self._state == 'GET_LOCATION':
             self._state = 'GET_LOCATION:ASKED'
@@ -170,7 +209,7 @@ class ConvoBot(object):
             return "OK"
 
         if self._state == 'FINISHED':
-            return "Thanks for visiting!"
+            pass
             
         return "UNCAUGHT STATE!! Your message is {} characters long".format(len(msg))
 
