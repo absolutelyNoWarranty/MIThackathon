@@ -1,5 +1,9 @@
 #import infermedica_api
 import mock_infermedica as infermedica_api
+
+from flask import session
+from flask_socketio import emit
+
 import googlemaps
 import diagnosis
 
@@ -32,7 +36,7 @@ class ConvoBot(object):
     def get_nearby_clinics(self, location=None, clinic_type='clinic'):
         if not location:
             location = self.user_location
-        res = self.gmaps.places_nearby(location=self.user_location, radius=500, keyword=clinic_type)
+        res = self.gmaps.places_nearby(location=self.user_location, radius=5000, keyword=clinic_type)
         names = '\n'.join([x['name'].encode('utf-8') for x in res['results']])
         self._nearby_clinics = res['results']
         return names 
@@ -145,17 +149,23 @@ class ConvoBot(object):
                         specialty = v
                         break
             self._state = 'FINISHED'
-            return "These clinics may help:" + str(self.get_nearby_clinics(clinic_type=specialty))
+
+            clinic_names = str(self.get_nearby_clinics(clinic_type=specialty))
+            places = self._nearby_clinics
+            center = {'lat': self.user_location[0],
+                      'lng': self.user_location[1]}
+            room = session.get('room')
+            emit('showmap', {'center': center, 'places': places}, room=room)
+            return "These clinics may help:\n" + clinic_names
 
         if self._state == 'GET_LOCATION':
-            # TODO:try to get location from frontend
             self._state = 'GET_LOCATION:ASKED'
             return self.ask_user_location()
 
         if self._state == 'GET_LOCATION:ASKED':
             msg = msg.strip().strip('(').strip(')').replace(',', ' ')
-            lat, lon = msg.split()
-            self.user_location = (lat, lon)
+            lat, lng = msg.split()
+            self.user_location = (float(lat), float(lng))
             self._state = 'RECOMMEND_CLINIC'
             return "OK"
 
