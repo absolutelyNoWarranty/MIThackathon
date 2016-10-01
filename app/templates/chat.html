@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Aldrich|Poiret+One|Russo+One|VT323" rel="stylesheet">
-    <style>
+     <style>
       html, body {
         height: 100%;
         margin: 0;
@@ -18,31 +18,42 @@
         border-style: groove;
         float: right;
       }
-
       #map {
-        height: 85%;
-        width: 800px;
-        float:left;
+        height: 80%;
+        width: auto;
+        
       }
       
       #chat{
-          height: 500px;
+          margin-top:0.5em; 
+          height: 50%;
           overflow-y: scroll;
       }
-      .message{
-          text-indent: 1em;
+      .bot_message{
+          text-indent: 0.5em;
+          background-color: #E8EAF6;
+          margin-bottom:0.5em;
+          font-size: 1.5em;
+          color: #212121;
+          padding: 0.5em;
       }
-
+      .pt_message{
+          text-indent: 0.5em;
+          background-color: #EEEEEE;
+          font-size: 1.5em;
+          margin-bottom:0.5em;
+          padding: 0.5em;
+      }
       #text{
-        padding: 10px 10px;
-        margin: 2px 0;
+        padding: 5px 5px;
+        margin: 2px 0px;
         box-sizing: border-box;
       }
       #header{
         font-family: 'Poiret One', cursive;
         text-align:center;
-      }
-      
+      }  
+    </style>
     </style>
         <title>Medical Pionner{{ room }}</title>
         <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
@@ -55,11 +66,11 @@
                     socket.emit('joined', {});
                 });
                 socket.on('status', function(data) {
-                    $('#chat').append('<p class= "message">' + data.msg + '</p>\n');
+                    $('#chat').append( '<div class= "mdl-card__title-text bot_message">'+data.msg+'</div></br>' );
                     $('#chat').scrollTop($('#chat')[0].scrollHeight);
                 });
                 socket.on('message', function(data) {
-                    $('#chat').append('<p class = "message">' + data.msg + '</p>\n');
+                    $('#chat').append( '<div class= "mdl-card__title-text pt_message">'+data.msg+'</div></br>' );
                     $('#chat').scrollTop($('#chat')[0].scrollHeight);
                 });
                 socket.on('showmap',function(data){
@@ -83,6 +94,7 @@
                            });
                         }
                     }
+                     $('#image').hide();
                     initMap();
                 });
           
@@ -107,23 +119,29 @@
         </script>
             </head>
     <body>
+
         <h1 id ="header">MeD Pior'</h1>
         <div id= "chat_layout" class ="mdl-card mdl-shadow--3dp ">
-
         <div class="mdl-card__supporting-text">
-        <div id="chat" cols="80" rows="20"></div><br><br>
-        <input id="text" size="83"  placeholder="Enter your message here"><br><br>
+       <div id="chat" cols="80" rows="20"></div><br><br>
+          <div class="mdl-textfield mdl-js-textfield">
+        <input class="mdl-textfield__input" id="text" size="83" 
+         placeholder="Enter your message here">
+        </div>
+       
+        </div>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" onclick="leave_room();">Leave this room
+            </button>
+        </div>
+                 <a id="image"><img src="{{url_for('static',filename='Blue-Robot.png')}}" 
+                 style="width:304px; height:228px; 
 
-        </div>
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" onclick="leave_room();">Leave this room</button>
-<script>
-      
-    </script>
-        </div>
-        <div class="mdl-card__media mdl-shadow--4dp mdl-card--border">
-          <div id="map"></div>
+                 "></a>
+                  <div id="map"></div>
+    
+                
           </div>
-          </div>
+        
     </body>
     <script type="text/javascript"
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCO_q7P79_HQmnApoRlhWi_-3cRwzd86A8&libraries=geometry,places">

@@ -1,14 +1,54 @@
 <html>
     <head>
         <title>Flask-SocketIO-Chat</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.2.1/material.min.js"></script>
+<style>
+ body{
+    background-color: #FAFAFA;
+ }
+.demo-card-wide.mdl-card {
+  width: 512px;
+  left:35%;
+  margin-top: 10%; 
+}
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+  background-color: #3F51B5;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
+}
+h1{
+    font: italic;
+    text-align: center;
+}
+</style>
     </head>
     <body>
-        <h1>Flask-SocketIO-Chat</h1>
+    <div class="demo-card-wide mdl-card mdl-shadow--2dp " >
+    <div class="mdl-card__title">
+        <h1>Med Bot</h1>
+        </div>
         <form method="POST">
+            <div class="mdl-card__supporting-text">
+            This is med piro, please type in your name 
+            </div>
+            <div style=" padding:1em;">
             {{ form.hidden_tag() }}
-            {{ form.name.label }}: {{ form.name() }} {% for error in form.name.errors %}{{ error }}{% endfor %}<br>
-            {{ form.room.label }}: {{ form.room() }} {% for error in form.room.errors %}{{ error }}{% endfor %}<br>
-            {{ form.submit() }}
+
+            {{ form.name.label }}  <div class="mdl-textfield mdl-js-textfield">: {{ form.name() }} {% for error in form.name.errors %}{{ error }}{% endfor %}</div><br>
+           
+            
+            {{ form.room.label }} <div class="mdl-textfield mdl-js-textfield">: {{ form.room() }} {% for error in form.room.errors %}{{ error }}{% endfor %}</div>
+            <br>
+            
+              {{ form.submit() }}
+            
         </form>
+                </div>
+        </div>
     </body>
 </html>

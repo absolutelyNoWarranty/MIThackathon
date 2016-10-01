@@ -13,8 +13,8 @@ def joined(message):
     room = session.get('room')
     join_room(room)
     #emit('status', {'msg': session.get('name') + ' has entered the room.'}, room=room)
-    emit('status', {'msg': medbot.greet()}, room=room)
-    
+    emit('status', {'msg': '<div class= "mdl-card__title-text"><span style="right: 1em;float:right;font-size:1em;">Med Bot :</span>'
+        + medbot.greet()+'</div>\n'}, room=room)
 
 @socketio.on('text', namespace='/chat')
 def text(message):
@@ -27,9 +27,11 @@ def text(message):
         places = medbot._nearby_clinics
         emit('showmap', {'msg': msg, 'places': places}, room=room)
     else:
-        emit('message', {'msg': session.get('name') + ':' + message['msg']}, room=room)
-        emit('status', {'msg': 'Med Bot : '+ medbot.speak(message['msg'])}, room=room)
-
+        emit('message', {'msg': '<span style="font-size:1em;">'
+        + session.get('name')+ ': </span> ' 
+        + message['msg']}, room=room)
+        emit('status', {'msg': '<span style="font-size:1em;">Med Bot: </span> '
+        + medbot.speak(message['msg']) +'</br>'}, room=room)
 
 
 @socketio.on('left', namespace='/chat')
