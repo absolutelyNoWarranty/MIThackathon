@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
-#import infermedica_api
-import mock_infermedica as infermedica_api
+import infermedica_api
+#import mock_infermedica as infermedica_api
 
 from flask import session
 from flask_socketio import emit
